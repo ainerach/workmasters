@@ -1,0 +1,262 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGODB_URL")
+}
+
+model User {
+  id                String              @id @default(auto()) @map("_id") @db.ObjectId
+  email             String              @unique
+  name              String?
+  role              UserRole            @default(PARTICIPANT)
+  profile           ParticipantProfile?
+  applications      Application[]
+  assignments       Assignment[]
+  attendances       Attendance[]
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+}
+
+enum UserRole {
+  ADMIN
+  PARTICIPANT
+  MENTOR
+}
+
+model ParticipantProfile {
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
+  user              User      @relation(fields: [userId], references: [id])
+  userId            String    @unique @db.ObjectId
+  phone             String
+  gender            String
+  occupation        String
+  incomeSource      String
+  monthlyIncome     String
+  track             Track     @relation(fields: [trackId], references: [id])
+  trackId           String   @db.ObjectId
+  goalStatement     String
+  challenge         String
+  visionStatement   String
+  progress          Int       @default(28)
+  revenueGenerated  Float     @default(17400)
+  clientsOnboarded  Int       @default(6)
+  sessionsAttended  Int       @default(12)
+  goalsAchieved     Int       @default(4)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  investments       Investment[]
+  revenues          Revenue[]
+  clients           Client[]
+  creations         Creation[]
+}
+
+model Application {
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
+  fullName          String
+  email             String
+  phone             String
+  gender            String
+  occupation        String
+  incomeSource      String
+  monthlyIncome     String
+  track             Track     @relation(fields: [trackId], references: [id])
+  trackId           String   @db.ObjectId
+  user              User?     @relation(fields: [userId], references: [id])
+  userId            String?  @db.ObjectId
+  motivation        String
+  challenge         String
+  goal             String
+  vision            String
+  status            ApplicationStatus @default(PENDING)
+  createdAt         DateTime  @default(now())
+}
+
+enum ApplicationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+model Track {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  name            String    @unique
+  description     String
+  participants    ParticipantProfile[]
+  applications    Application[]
+}
+
+model Session {
+  id          String            @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  date        DateTime
+  highlight   String
+  status      SessionStatus
+  highlights  SessionHighlight[]
+  attendance  Attendance[]
+  assignments Assignment[]
+}
+
+enum SessionStatus {
+  COMPLETED
+  UPCOMING
+}
+
+model SessionHighlight {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  session     Session   @relation(fields: [sessionId], references: [id])
+  sessionId   String   @db.ObjectId
+  note        String
+  createdAt   DateTime  @default(now())
+}
+
+model Attendance {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String   @db.ObjectId
+  session     Session   @relation(fields: [sessionId], references: [id])
+  sessionId   String   @db.ObjectId
+  status      AttendanceStatus
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+}
+
+model Assignment {
+  id          String                   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  session     Session                  @relation(fields: [sessionId], references: [id])
+  sessionId   String   @db.ObjectId
+  user        User?                     @relation(fields: [userId], references: [id])
+  userId      String?  @db.ObjectId
+  dueDate     DateTime
+  status      AssignmentStatus
+  submission  AssignmentSubmission?
+}
+
+enum AssignmentStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  SUBMITTED
+  REVIEWED
+}
+
+model AssignmentSubmission {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  assignment    Assignment  @relation(fields: [assignmentId], references: [id])
+  assignmentId  String      @unique @db.ObjectId
+  content       String
+  submittedAt   DateTime    @default(now())
+  reviewed      Boolean     @default(false)
+}
+
+model Resource {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  category    String
+  title       String
+  description String
+  link        String
+}
+
+model Mentor {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  specialty   String
+  bio         String
+  checkins    MentorCheckin[]
+}
+
+model MentorCheckin {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  mentor      Mentor    @relation(fields: [mentorId], references: [id])
+  mentorId    String   @db.ObjectId
+  quarter     Int
+  status      String
+}
+
+model Investment {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  category      String
+  amount        Float
+  createdAt     DateTime  @default(now())
+  participant   ParticipantProfile @relation(fields: [participantId], references: [id])
+  participantId String   @db.ObjectId
+}
+
+model Revenue {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  amount        Float
+  source        String
+  createdAt     DateTime  @default(now())
+  participant   ParticipantProfile @relation(fields: [participantId], references: [id])
+  participantId String   @db.ObjectId
+}
+
+model Client {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  project       String
+  revenue       Float
+  participant   ParticipantProfile @relation(fields: [participantId], references: [id])
+  participantId String   @db.ObjectId
+}
+
+model Creation {
+  id            String     @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  outcome       String
+  status        String
+  impact        String
+  participant   ParticipantProfile @relation(fields: [participantId], references: [id])
+  participantId String   @db.ObjectId
+}
+
+model Pod {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  focus       String
+  meetingDate DateTime
+  progress    Int
+  members     PodMember[]
+  checkins    PodCheckin[]
+}
+
+model PodMember {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  pod         Pod       @relation(fields: [podId], references: [id])
+  podId       String   @db.ObjectId
+}
+
+model PodCheckin {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  pod         Pod       @relation(fields: [podId], references: [id])
+  podId       String   @db.ObjectId
+  prompt      String
+  status      String
+}
+
+model Challenge {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  summary     String
+}
+
+model Notification {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  content     String
+  isRead      Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+}
+
+model Announcement {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  message     String
+  publishedAt DateTime  @default(now())
+}

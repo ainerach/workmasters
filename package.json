@@ -1,0 +1,43 @@
+{
+  "name": "workmasters-launchpad",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "netlify:build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "prisma:generate": "prisma generate",
+    "prisma:seed": "ts-node --esm prisma/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.18.0",
+    "@types/node": "^20.14.2",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "classnames": "^2.3.2",
+    "date-fns": "^2.30.0",
+    "lucide-react": "^0.435.0",
+    "next": "^15.4.2",
+    "next-auth": "^4.24.14",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "recharts": "^2.10.0"
+  },
+  "devDependencies": {
+    "@netlify/plugin-nextjs": "^5.15.12",
+    "@types/classnames": "^2.3.2",
+    "@types/date-fns": "^2.6.3",
+    "@types/lodash": "^4.14.202",
+    "autoprefixer": "^10.4.20",
+    "cloudinary": "^2.10.0",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^15.4.2",
+    "postcss": "^8.4.40",
+    "prisma": "^5.18.0",
+    "tailwindcss": "^3.4.4",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.6.2"
+  }
+}

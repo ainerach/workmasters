@@ -1,0 +1,11 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+  environment = { NODE_VERSION = "24" }
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[context.production.environment]
+  NEXTAUTH_URL = "https://your-site.netlify.app"
+  # Set MONGODB_URL and NEXTAUTH_SECRET in Netlify site settings for production
