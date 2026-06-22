@@ -51,3 +51,4 @@ CLOUDINARY_API_SECRET=your_api_secret
 
 Client image uploads use the `ImageUploader` component (`components/image-uploader.tsx`) which sends a base64 data URI to the server route at `/api/upload`. The server uploads to Cloudinary using the `cloudinary` SDK and returns the uploaded asset information.
 # workmasters
+# workmasters
