@@ -1,5 +1,6 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import { prisma } from '@/lib/prisma';
 
 const authOptions = {
   providers: [
@@ -7,17 +8,26 @@ const authOptions = {
       name: 'Credentials',
       credentials: {
         email: { label: 'Email', type: 'text' },
-        password: { label: 'Password', type: 'password' }
+        password: { label: 'Password', type: 'password' },
+        role: { label: 'Role', type: 'text' }
       },
       async authorize(credentials) {
-        if (!credentials?.email) return null;
-        const user = {
-          id: '1',
-          name: 'Shamis',
-          email: credentials.email,
-          role: 'PARTICIPANT'
+        if (!credentials?.email || !credentials?.password || !credentials?.role) return null;
+
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email }
+        });
+
+        if (!user || user.password !== credentials.password || user.role !== credentials.role) {
+          return null;
+        }
+
+        return {
+          id: user.id,
+          name: user.name ?? user.email,
+          email: user.email,
+          role: user.role
         };
-        return user;
       }
     })
   ],

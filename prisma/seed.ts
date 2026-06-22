@@ -49,6 +49,28 @@ async function main() {
     }
   });
 
+  await prisma.user.upsert({
+    where: { email: 'mentor@workmasters.com' },
+    update: {},
+    create: {
+      email: 'mentor@workmasters.com',
+      name: 'Mentor',
+      password: 'mentor123',
+      role: 'MENTOR'
+    }
+  });
+
+  await prisma.user.upsert({
+    where: { email: 'admin@workmasters.com' },
+    update: {},
+    create: {
+      email: 'admin@workmasters.com',
+      name: 'Admin',
+      password: 'admin123',
+      role: 'ADMIN'
+    }
+  });
+
   const participants = [
     { name: 'Aaliyah', track: entrepreneurTrack, incomeSource: 'product sales', monthlyIncome: '$11,300' },
     { name: 'Kofi', track: investorTrack, incomeSource: 'portfolio income', monthlyIncome: '$7,800' },
